@@ -1,5 +1,6 @@
 package com.onetwo.chattingservice.config;
 
+import com.onetwo.chattingservice.common.GlobalURI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.WebSocketHandler;
@@ -16,6 +17,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketHandler, "/message").setAllowedOrigins("*");
+        registry.addHandler(webSocketHandler, GlobalURI.MESSAGE_ROOT + "/*").setAllowedOrigins("*");
     }
 }
