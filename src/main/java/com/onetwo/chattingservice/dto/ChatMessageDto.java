@@ -9,6 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 public class ChatMessageDto {
 
-    private Long senderId;
+    private String senderId;
     private String message;
 }

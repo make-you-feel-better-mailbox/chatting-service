@@ -24,13 +24,13 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 
     private final ObjectMapper mapper;
     private final Set<WebSocketSession> sessions = new HashSet<>();
-    private final Map<Long, Set<WebSocketSession>> chatRoomSessionMap = new HashMap<>();
+    private final Map<String, Set<WebSocketSession>> chatRoomSessionMap = new HashMap<>();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         log.info("WebSocket connect request - session id = {}", session.getId());
 
-        long chatRoomId = getChatRoomId(session);
+        String chatRoomId = getChatRoomId(session);
 
         if (!chatRoomSessionMap.containsKey(chatRoomId)) chatRoomSessionMap.put(chatRoomId, new HashSet<>());
 
@@ -53,7 +53,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         ChatMessageDto chatMessageDto = mapper.readValue(payload, ChatMessageDto.class);
         log.info("session {}", chatMessageDto.toString());
 
-        Long chatRoomId = getChatRoomId(session);
+        String chatRoomId = getChatRoomId(session);
 
         Set<WebSocketSession> chatRoomSession = chatRoomSessionMap.get(chatRoomId);
 
@@ -66,8 +66,8 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         sessions.remove(session);
     }
 
-    private long getChatRoomId(WebSocketSession session) {
-        long chatRoomId;
+    private String getChatRoomId(WebSocketSession session) {
+        String chatRoomId;
 
         try {
             String requestURI = session.getUri().toString();
@@ -75,7 +75,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             String[] parts = requestURI.split("/");
             String lastPart = parts[parts.length - 1];
 
-            chatRoomId = Long.parseLong(lastPart);
+            chatRoomId = lastPart;
 
             log.info("session id - {}, chat room id - {}", session.getId(), chatRoomId);
         } catch (Exception e) {
