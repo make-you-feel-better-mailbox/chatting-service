@@ -1,0 +1,40 @@
+spring:
+  profiles:
+    active: local
+  application:
+    name: chatting-service
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: chatting
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  main:
+    allow-bean-definition-overriding: true
+
+server:
+  port: 9000
+
+logging:
+  level:
+    org:
+      hibernate:
+        orm:
+          jdbc:
+            bind: trace
+
+jwt:
+  secret-key: secret-key-one-two-dear-my-x-it-will-be-change-next-time
+
+access-id: server-access-id
+access-key: server-access-key
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
