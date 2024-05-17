@@ -20,11 +20,7 @@ server:
 
 logging:
   level:
-    org:
-      hibernate:
-        orm:
-          jdbc:
-            bind: trace
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
 
 jwt:
   secret-key: secret-key-one-two-dear-my-x-it-will-be-change-next-time
