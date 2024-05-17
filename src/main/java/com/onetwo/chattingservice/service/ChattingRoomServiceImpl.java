@@ -13,10 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ChattingServiceImpl implements ChattingService {
+public class ChattingRoomServiceImpl implements ChattingRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
 
@@ -50,5 +51,10 @@ public class ChattingServiceImpl implements ChattingService {
                 ).toList();
 
         return new ChatRoomListResponse(chatRoomDetailResponses);
+    }
+
+    @Override
+    public Optional<ChatRoom> findChatRoomByChatRoomId(String chatRoomId) {
+        return chatRoomRepository.findById(chatRoomId);
     }
 }

@@ -3,6 +3,8 @@ package com.onetwo.chattingservice.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onetwo.chattingservice.dto.ChatMessageDto;
 import com.onetwo.chattingservice.exception.BadRequestException;
+import com.onetwo.chattingservice.service.ChattingMessageService;
+import com.onetwo.chattingservice.service.ChattingRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -25,6 +27,10 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
     private final ObjectMapper mapper;
     private final Set<WebSocketSession> sessions = new HashSet<>();
     private final Map<String, Set<WebSocketSession>> chatRoomSessionMap = new HashMap<>();
+
+    private final ChattingRoomService chattingRoomService;
+
+    private final ChattingMessageService chattingMessageService;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
@@ -57,7 +63,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 
         Set<WebSocketSession> chatRoomSession = chatRoomSessionMap.get(chatRoomId);
 
-        sendMessageToChatRoom(chatMessageDto, chatRoomSession);
+        sendMessageToChatRoom(chatMessageDto, chatRoomSession, chatRoomId);
     }
 
     @Override
@@ -77,6 +83,9 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 
             chatRoomId = lastPart;
 
+            chattingRoomService.findChatRoomByChatRoomId(chatRoomId)
+                    .orElseThrow(() -> new BadRequestException("chat room id does not exist"));
+
             log.info("session id - {}, chat room id - {}", session.getId(), chatRoomId);
         } catch (Exception e) {
             log.info("WebSocket Connect Bad Request on get chat room id exception = " + e);
@@ -90,7 +99,8 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         chatRoomSession.removeIf(sess -> !sessions.contains(sess));
     }
 
-    private void sendMessageToChatRoom(ChatMessageDto chatMessageDto, Set<WebSocketSession> chatRoomSession) {
+    private void sendMessageToChatRoom(ChatMessageDto chatMessageDto, Set<WebSocketSession> chatRoomSession, String chatRoomId) {
+        chattingMessageService.registerChatMessage(chatMessageDto, chatRoomId);
         chatRoomSession.parallelStream().forEach(sess -> sendMessage(sess, chatMessageDto));
     }
 
