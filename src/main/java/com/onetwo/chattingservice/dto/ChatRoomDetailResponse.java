@@ -5,7 +5,7 @@ import java.util.List;
 
 public record ChatRoomDetailResponse(
         String chatRoomId,
-        List<String> chatUsers,
+        List<ChatUserDetail> chatUsers,
         Boolean unreadMessageExist,
         Instant createdAt
 ) {

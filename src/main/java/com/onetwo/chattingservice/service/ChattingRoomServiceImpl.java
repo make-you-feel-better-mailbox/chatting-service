@@ -1,11 +1,9 @@
 package com.onetwo.chattingservice.service;
 
 import com.onetwo.chattingservice.common.GlobalStatus;
-import com.onetwo.chattingservice.dto.ChatRoomDetailResponse;
-import com.onetwo.chattingservice.dto.ChatRoomListResponse;
-import com.onetwo.chattingservice.dto.RegisterChatRoomRequest;
-import com.onetwo.chattingservice.dto.RegisterChatRoomResponse;
+import com.onetwo.chattingservice.dto.*;
 import com.onetwo.chattingservice.entity.ChatRoom;
+import com.onetwo.chattingservice.grpc.UserGrpcClient;
 import com.onetwo.chattingservice.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +19,7 @@ import java.util.Random;
 public class ChattingRoomServiceImpl implements ChattingRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
+    private final UserGrpcClient userGrpcClient;
 
     @Override
     @Transactional
@@ -49,7 +48,9 @@ public class ChattingRoomServiceImpl implements ChattingRoomService {
         List<ChatRoomDetailResponse> chatRoomDetailResponses = chatRoomList.stream()
                 .map(e -> new ChatRoomDetailResponse(
                         e.getChatRoomId(),
-                        e.getChatUsers(),
+                        e.getChatUsers().stream().map(
+                                chatUserId -> new ChatUserDetail(chatUserId, userGrpcClient.getUserNickname(chatUserId))
+                        ).toList(),
                         random.nextBoolean(), //Todo 차후에 메시지 읽었는지 여부 확인하는 코드로 변경
                         e.getCreatedAt())
                 ).toList();
