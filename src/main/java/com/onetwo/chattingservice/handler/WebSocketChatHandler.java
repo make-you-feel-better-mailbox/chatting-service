@@ -13,7 +13,6 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -43,8 +42,6 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         Set<WebSocketSession> chatRoomSession = chatRoomSessionMap.get(chatRoomId);
 
         chatRoomSession.add(session);
-
-        if (chatRoomSession.size() >= 3) removeClosedSession(chatRoomSession);
 
         sessions.add(session);
 
@@ -105,7 +102,9 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
     public <T> void sendMessage(WebSocketSession session, T message) {
         try {
             session.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
-        } catch (IOException e) {
+        } catch (IllegalStateException e) {
+            log.info(e.getMessage(), e);
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
     }
