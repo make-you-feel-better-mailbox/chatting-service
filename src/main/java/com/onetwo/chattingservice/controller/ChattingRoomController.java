@@ -8,7 +8,11 @@ import com.onetwo.chattingservice.service.ChattingRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,8 +25,8 @@ public class ChattingRoomController {
         return ResponseEntity.status(HttpStatus.CREATED).body(chattingRoomService.registerChatRoom(registerChatRoomRequest));
     }
 
-    @GetMapping(GlobalURI.CHATTING_ROOM + GlobalURI.PATH_VARIABLE_USER_ID_WITH_BRACE)
-    public ResponseEntity<ChatRoomListResponse> getChatRoomListByUserId(@PathVariable(GlobalURI.PATH_VARIABLE_USER_ID) String userId) {
+    @GetMapping(GlobalURI.CHATTING_ROOM)
+    public ResponseEntity<ChatRoomListResponse> getChatRoomListByUserId(@AuthenticationPrincipal String userId) {
         return ResponseEntity.ok().body(chattingRoomService.getChatRoomListByUserId(userId));
     }
 }
