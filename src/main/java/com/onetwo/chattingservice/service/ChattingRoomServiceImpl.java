@@ -72,7 +72,7 @@ public class ChattingRoomServiceImpl implements ChattingRoomService {
     }
 
     private LastChatDetail getLastChatDetail(ChatRoom chatRoom) {
-        Optional<ChatMessage> chatMessageOpt = chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatRoom.getChatRoomId());
+        Optional<ChatMessage> chatMessageOpt = chatMessageRepository.findFirstByChatRoomIdOrderByCreatedAtDesc(chatRoom.getChatRoomId());
 
         ChatMessage lastChat = chatMessageOpt.orElse(new ChatMessage());
 
