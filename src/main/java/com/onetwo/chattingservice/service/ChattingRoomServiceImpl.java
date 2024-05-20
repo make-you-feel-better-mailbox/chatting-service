@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -43,10 +44,13 @@ public class ChattingRoomServiceImpl implements ChattingRoomService {
     public ChatRoomListResponse getChatRoomListByUserId(String userId) {
         List<ChatRoom> chatRoomList = chatRoomRepository.findByChatUsersContainingAndState(userId, GlobalStatus.PERSISTENCE_NOT_DELETED);
 
+        Random random = new Random();
+
         List<ChatRoomDetailResponse> chatRoomDetailResponses = chatRoomList.stream()
                 .map(e -> new ChatRoomDetailResponse(
                         e.getChatRoomId(),
                         e.getChatUsers(),
+                        random.nextBoolean(), //Todo 차후에 메시지 읽었는지 여부 확인하는 코드로 변경
                         e.getCreatedAt())
                 ).toList();
 

@@ -79,12 +79,9 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             String requestURI = session.getUri().toString();
 
             String[] parts = requestURI.split("/");
-            String lastPart = parts[parts.length - 1];
 
-            chatRoomId = lastPart;
-
-            chattingRoomService.findChatRoomByChatRoomId(chatRoomId)
-                    .orElseThrow(() -> new BadRequestException("chat room id does not exist"));
+            chatRoomId = chattingRoomService.findChatRoomByChatRoomId(parts[parts.length - 1])
+                    .orElseThrow(() -> new BadRequestException("chat room id does not exist")).getChatRoomId();
 
             log.info("session id - {}, chat room id - {}", session.getId(), chatRoomId);
         } catch (Exception e) {
