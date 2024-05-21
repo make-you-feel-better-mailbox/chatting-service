@@ -3,5 +3,5 @@ package com.onetwo.chattingservice.service;
 import com.onetwo.chattingservice.dto.ChatMessageDetailsResponse;
 
 public interface ChatMessageService {
-    ChatMessageDetailsResponse getMessageListByChatRoomId(String chatRoomId);
+    ChatMessageDetailsResponse getMessageListByChatRoomId(String chatRoomId, String userId);
 }

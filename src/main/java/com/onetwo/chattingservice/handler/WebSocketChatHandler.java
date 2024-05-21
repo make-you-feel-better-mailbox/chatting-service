@@ -2,11 +2,11 @@ package com.onetwo.chattingservice.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onetwo.chattingservice.dto.ChatMessageDto;
-import com.onetwo.chattingservice.exception.BadRequestException;
 import com.onetwo.chattingservice.service.ChattingMessageService;
 import com.onetwo.chattingservice.service.ChattingRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import onetwo.mailboxcommonconfig.common.exceptions.BadRequestException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;

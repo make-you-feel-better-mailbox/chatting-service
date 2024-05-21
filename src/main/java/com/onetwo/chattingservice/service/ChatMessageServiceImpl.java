@@ -4,8 +4,12 @@ import com.onetwo.chattingservice.common.GlobalStatus;
 import com.onetwo.chattingservice.dto.ChatMessageDetail;
 import com.onetwo.chattingservice.dto.ChatMessageDetailsResponse;
 import com.onetwo.chattingservice.entity.ChatMessage;
+import com.onetwo.chattingservice.entity.ChatRoom;
 import com.onetwo.chattingservice.repository.ChatMessageRepository;
+import com.onetwo.chattingservice.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
+import onetwo.mailboxcommonconfig.common.exceptions.BadRequestException;
+import onetwo.mailboxcommonconfig.common.exceptions.NotFoundResourceException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,12 +18,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatMessageServiceImpl implements ChatMessageService {
 
+    private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
 
     @Override
-    public ChatMessageDetailsResponse getMessageListByChatRoomId(String chatRoomId) {
+    public ChatMessageDetailsResponse getMessageListByChatRoomId(String chatRoomId, String userId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(() -> new NotFoundResourceException("chat room does not exist"));
+
+        if (!chatRoom.getChatUsers().contains(userId))
+            throw new BadRequestException("Only chat members can get chat messages");
+
         List<ChatMessage> chatMessageList = chatMessageRepository.findByChatRoomIdAndStateOrderByCreatedAtDesc(
-                chatRoomId,
+                chatRoom.getChatRoomId(),
                 GlobalStatus.PERSISTENCE_NOT_DELETED
         );
 
