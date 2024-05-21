@@ -44,7 +44,7 @@ public class ChattingRoomServiceImpl implements ChattingRoomService {
     @Override
     @Transactional(readOnly = true)
     public ChatRoomListResponse getChatRoomListByUserId(String userId) {
-        List<ChatRoom> chatRoomList = chatRoomRepository.findByChatUsersContainingAndState(userId, GlobalStatus.PERSISTENCE_NOT_DELETED);
+        List<ChatRoom> chatRoomList = chatRoomRepository.findByChatUsersContainingAndStateOrderByCreatedAtDesc(userId, GlobalStatus.PERSISTENCE_NOT_DELETED);
 
         List<ChatRoomDetailResponse> chatRoomDetailResponses = chatRoomList.stream()
                 .map(e -> getChatRoomDetailResponse(e)).toList();
@@ -82,5 +82,15 @@ public class ChattingRoomServiceImpl implements ChattingRoomService {
     @Override
     public Optional<ChatRoom> findChatRoomByChatRoomId(String chatRoomId) {
         return chatRoomRepository.findById(chatRoomId);
+    }
+
+    @Override
+    public ChatRoomExistResponse checkChatRoomExist(RegisterChatRoomRequest registerChatRoomRequest) {
+        Optional<ChatRoom> chatRoomOpt =
+                chatRoomRepository.findByChatUsersAndState(registerChatRoomRequest.targetUserIds(), GlobalStatus.PERSISTENCE_NOT_DELETED);
+
+        ChatRoom chatRoom = chatRoomOpt.orElseGet(() -> new ChatRoom());
+
+        return new ChatRoomExistResponse(chatRoomOpt.isPresent(), chatRoom.getChatRoomId());
     }
 }
