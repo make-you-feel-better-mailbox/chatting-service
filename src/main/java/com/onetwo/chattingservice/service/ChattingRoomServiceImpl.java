@@ -8,6 +8,8 @@ import com.onetwo.chattingservice.grpc.UserGrpcClient;
 import com.onetwo.chattingservice.repository.ChatMessageRepository;
 import com.onetwo.chattingservice.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
+import onetwo.mailboxcommonconfig.common.exceptions.BadRequestException;
+import onetwo.mailboxcommonconfig.common.exceptions.NotFoundResourceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,9 @@ public class ChattingRoomServiceImpl implements ChattingRoomService {
     @Override
     @Transactional
     public RegisterChatRoomResponse registerChatRoom(RegisterChatRoomRequest registerChatRoomRequest) {
+        if (registerChatRoomRequest.targetUserIds() == null || registerChatRoomRequest.targetUserIds().isEmpty())
+            throw new BadRequestException("targetUserIds is should have value");
+
         List<String> chatRoomUserIds = registerChatRoomRequest.targetUserIds();
 
         ChatRoom chatRoom = ChatRoom
@@ -92,5 +97,11 @@ public class ChattingRoomServiceImpl implements ChattingRoomService {
         ChatRoom chatRoom = chatRoomOpt.orElseGet(() -> new ChatRoom());
 
         return new ChatRoomExistResponse(chatRoomOpt.isPresent(), chatRoom.getChatRoomId());
+    }
+
+    @Override
+    public ChatRoomDetailResponse getChatRoomDetail(String chatRoomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(() -> new NotFoundResourceException("chat room does not exist"));
+        return getChatRoomDetailResponse(chatRoom);
     }
 }

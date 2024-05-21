@@ -1,10 +1,7 @@
 package com.onetwo.chattingservice.controller;
 
 import com.onetwo.chattingservice.common.GlobalURI;
-import com.onetwo.chattingservice.dto.ChatRoomExistResponse;
-import com.onetwo.chattingservice.dto.ChatRoomListResponse;
-import com.onetwo.chattingservice.dto.RegisterChatRoomRequest;
-import com.onetwo.chattingservice.dto.RegisterChatRoomResponse;
+import com.onetwo.chattingservice.dto.*;
 import com.onetwo.chattingservice.service.ChattingRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,5 +28,10 @@ public class ChattingRoomController {
     @GetMapping(GlobalURI.CHATTING_ROOT)
     public ResponseEntity<ChatRoomExistResponse> checkChatRoomExist(@ModelAttribute RegisterChatRoomRequest registerChatRoomRequest) {
         return ResponseEntity.ok().body(chattingRoomService.checkChatRoomExist(registerChatRoomRequest));
+    }
+
+    @GetMapping(GlobalURI.CHATTING_ROOM_DETAIL + GlobalURI.PATH_VARIABLE_CHAT_ROOM_ID_WITH_BRACE)
+    public ResponseEntity<ChatRoomDetailResponse> getChatRoomDetail(@PathVariable(GlobalURI.PATH_VARIABLE_CHAT_ROOM_ID) String chatRoomId) {
+        return ResponseEntity.ok().body(chattingRoomService.getChatRoomDetail(chatRoomId));
     }
 }
