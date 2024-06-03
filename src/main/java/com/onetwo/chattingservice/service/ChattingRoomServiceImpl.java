@@ -7,6 +7,7 @@ import com.onetwo.chattingservice.entity.ChatRoom;
 import com.onetwo.chattingservice.grpc.UserGrpcClient;
 import com.onetwo.chattingservice.repository.ChatMessageRepository;
 import com.onetwo.chattingservice.repository.ChatRoomRepository;
+import com.onetwo.rpc.user.UserInfo;
 import lombok.RequiredArgsConstructor;
 import onetwo.mailboxcommonconfig.common.exceptions.BadRequestException;
 import onetwo.mailboxcommonconfig.common.exceptions.NotFoundResourceException;
@@ -72,7 +73,11 @@ public class ChattingRoomServiceImpl implements ChattingRoomService {
 
     private List<ChatUserDetail> getChatUserDetails(ChatRoom chatRoom) {
         return chatRoom.getChatUsers().stream().map(
-                chatUserId -> new ChatUserDetail(chatUserId, userGrpcClient.getUserNickname(chatUserId))
+                chatUserId -> {
+                    UserInfo userInfo = userGrpcClient.getUserInfo(chatUserId);
+
+                    return new ChatUserDetail(chatUserId, userInfo.getUserNickname(), userInfo.getProfileImageEndPoint());
+                }
         ).toList();
     }
 
