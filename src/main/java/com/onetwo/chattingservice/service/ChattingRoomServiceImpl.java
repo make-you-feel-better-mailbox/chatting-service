@@ -53,7 +53,7 @@ public class ChattingRoomServiceImpl implements ChattingRoomService {
         List<ChatRoom> chatRoomList = chatRoomRepository.findByChatUsersContainingAndStateOrderByCreatedAtDesc(userId, GlobalStatus.PERSISTENCE_NOT_DELETED);
 
         List<ChatRoomDetailResponse> chatRoomDetailResponses = chatRoomList.stream()
-                .map(e -> getChatRoomDetailResponse(e)).toList();
+                .map(this::getChatRoomDetailResponse).toList();
 
         return new ChatRoomListResponse(chatRoomDetailResponses);
     }

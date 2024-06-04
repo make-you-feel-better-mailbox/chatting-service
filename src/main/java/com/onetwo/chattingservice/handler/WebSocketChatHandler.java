@@ -1,9 +1,12 @@
 package com.onetwo.chattingservice.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onetwo.chattingservice.dto.ChatMessageDto;
+import com.onetwo.chattingservice.dto.ChatMessageRequestDto;
+import com.onetwo.chattingservice.dto.ChatMessageResponseDto;
+import com.onetwo.chattingservice.grpc.UserGrpcClient;
 import com.onetwo.chattingservice.service.ChattingMessageService;
 import com.onetwo.chattingservice.service.ChattingRoomService;
+import com.onetwo.rpc.user.UserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import onetwo.mailboxcommonconfig.common.exceptions.BadRequestException;
@@ -31,6 +34,8 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 
     private final ChattingMessageService chattingMessageService;
 
+    private final UserGrpcClient userGrpcClient;
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         log.info("WebSocket connect request - session id = {}", session.getId());
@@ -53,14 +58,14 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         String payload = message.getPayload();
         log.info("payload {}", payload);
 
-        ChatMessageDto chatMessageDto = mapper.readValue(payload, ChatMessageDto.class);
-        log.info("session {}", chatMessageDto.toString());
+        ChatMessageRequestDto chatMessageRequestDto = mapper.readValue(payload, ChatMessageRequestDto.class);
+        log.info("session {}", chatMessageRequestDto.toString());
 
         String chatRoomId = getChatRoomId(session);
 
         Set<WebSocketSession> chatRoomSession = chatRoomSessionMap.get(chatRoomId);
 
-        sendMessageToChatRoom(chatMessageDto, chatRoomSession, chatRoomId);
+        sendMessageToChatRoom(chatMessageRequestDto, chatRoomSession, chatRoomId);
     }
 
     @Override
@@ -93,9 +98,18 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         chatRoomSession.removeIf(sess -> !sessions.contains(sess));
     }
 
-    private void sendMessageToChatRoom(ChatMessageDto chatMessageDto, Set<WebSocketSession> chatRoomSession, String chatRoomId) {
-        chattingMessageService.registerChatMessage(chatMessageDto, chatRoomId);
-        chatRoomSession.parallelStream().forEach(sess -> sendMessage(sess, chatMessageDto));
+    private void sendMessageToChatRoom(ChatMessageRequestDto chatMessageRequestDto, Set<WebSocketSession> chatRoomSession, String chatRoomId) {
+        chattingMessageService.registerChatMessage(chatMessageRequestDto, chatRoomId);
+
+        UserInfo userInfo = userGrpcClient.getUserInfo(chatMessageRequestDto.getSenderId());
+
+        ChatMessageResponseDto chatMessageResponseDto = new ChatMessageResponseDto(
+                chatMessageRequestDto.getSenderId(),
+                userInfo.getProfileImageEndPoint(),
+                chatMessageRequestDto.getMessage()
+        );
+
+        chatRoomSession.parallelStream().forEach(sess -> sendMessage(sess, chatMessageResponseDto));
     }
 
 

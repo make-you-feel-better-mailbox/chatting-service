@@ -1,7 +1,7 @@
 package com.onetwo.chattingservice.service;
 
-import com.onetwo.chattingservice.dto.ChatMessageDto;
+import com.onetwo.chattingservice.dto.ChatMessageRequestDto;
 
 public interface ChattingMessageService {
-    void registerChatMessage(ChatMessageDto chatMessageDto, String chatRoomId);
+    void registerChatMessage(ChatMessageRequestDto chatMessageRequestDto, String chatRoomId);
 }

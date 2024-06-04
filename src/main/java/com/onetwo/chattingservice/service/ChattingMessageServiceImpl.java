@@ -1,7 +1,7 @@
 package com.onetwo.chattingservice.service;
 
 import com.onetwo.chattingservice.common.GlobalStatus;
-import com.onetwo.chattingservice.dto.ChatMessageDto;
+import com.onetwo.chattingservice.dto.ChatMessageRequestDto;
 import com.onetwo.chattingservice.entity.ChatMessage;
 import com.onetwo.chattingservice.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +18,12 @@ public class ChattingMessageServiceImpl implements ChattingMessageService {
 
     @Override
     @Transactional
-    public void registerChatMessage(ChatMessageDto chatMessageDto, String chatRoomId) {
+    public void registerChatMessage(ChatMessageRequestDto chatMessageRequestDto, String chatRoomId) {
         ChatMessage chatMessage = ChatMessage
                 .builder()
                 .chatRoomId(chatRoomId)
-                .message(chatMessageDto.getMessage())
-                .senderId(chatMessageDto.getSenderId())
+                .message(chatMessageRequestDto.getMessage())
+                .senderId(chatMessageRequestDto.getSenderId())
                 .createdAt(Instant.now())
                 .state(GlobalStatus.PERSISTENCE_NOT_DELETED)
                 .build();

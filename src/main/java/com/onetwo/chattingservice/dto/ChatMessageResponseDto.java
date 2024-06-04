@@ -7,8 +7,9 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatMessageDto {
+public class ChatMessageResponseDto {
 
     private String senderId;
+    private String userProfileImageEndPoint;
     private String message;
 }
