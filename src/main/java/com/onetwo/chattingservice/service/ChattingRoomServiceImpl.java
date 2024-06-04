@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -50,10 +51,12 @@ public class ChattingRoomServiceImpl implements ChattingRoomService {
     @Override
     @Transactional(readOnly = true)
     public ChatRoomListResponse getChatRoomListByUserId(String userId) {
-        List<ChatRoom> chatRoomList = chatRoomRepository.findByChatUsersContainingAndStateOrderByCreatedAtDesc(userId, GlobalStatus.PERSISTENCE_NOT_DELETED);
+        List<ChatRoom> chatRoomList = chatRoomRepository.findByChatUsersContainingAndState(userId, GlobalStatus.PERSISTENCE_NOT_DELETED);
 
         List<ChatRoomDetailResponse> chatRoomDetailResponses = chatRoomList.stream()
-                .map(this::getChatRoomDetailResponse).toList();
+                .map(this::getChatRoomDetailResponse).sorted(
+                        Comparator.comparing((ChatRoomDetailResponse response) -> response.lastChatDetail().lastChatDate()).reversed()
+                ).toList();
 
         return new ChatRoomListResponse(chatRoomDetailResponses);
     }

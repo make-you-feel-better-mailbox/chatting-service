@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ChatRoomRepository extends MongoRepository<ChatRoom, String> {
 
-    List<ChatRoom> findByChatUsersContainingAndStateOrderByCreatedAtDesc(String userId, Boolean state);
+    List<ChatRoom> findByChatUsersContainingAndState(String userId, Boolean state);
 
     Optional<ChatRoom> findByChatUsersAndState(List<String> userIds, Boolean state);
 }
